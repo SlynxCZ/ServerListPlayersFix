@@ -12,6 +12,15 @@ for sdk_target in MMSPlugin.sdk_targets:
 
   binary = MMSPlugin.HL2Library(builder, cxx, MMSPlugin.plugin_name, sdk)
 
+  try:
+    version = subprocess.check_output(['git', 'describe', '--tags', '--long']).decode('ascii').strip()
+  except subprocess.SubprocessError as e:
+    version = "1.3-dev"
+    print("git describe failed as there are no tags")
+	
+  print(f'Setting version to "{version}"')
+  binary.compiler.defines += ['SERVERLISTPLAYERSFIX_VERSION="%s"'%(version)]
+
   binary.sources += [
     'serverlistplayersfix.cpp',
     'cs2_sdk/schema.cpp',
